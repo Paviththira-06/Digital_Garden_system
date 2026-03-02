@@ -1,4 +1,4 @@
-import { registerUser, loginUser } from '../services/auth.service.js';
+import { registerUser, loginUser, getProfile, logoutUser, forgotPassword, resetPassword   } from '../services/auth.service.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 
 // ── POST /api/auth/register ───────────────────────────
@@ -62,4 +62,90 @@ const login = async (req, res) => {
   }
 };
 
-export { register, login };
+// ── GET Profile ───────────────────────────────────────
+const profile = async (req, res) => {
+  try {
+    const user = await getProfile(req.user.userId);
+    return sendSuccess(res, 200, 'Profile fetched successfully', { user });
+  } catch (error) {
+    if (error.statusCode) return sendError(res, error.statusCode, error.message);
+    return sendError(res, 500, 'Internal server error', error);
+  }
+};
+
+// New → checks cookie AND header 
+const logout = async (req, res) => {
+  try {
+    // ── checks BOTH cookie and header ──
+    let token = req.cookies.token;
+
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+      }
+    }
+
+    if (token) {
+      await logoutUser(token);  // ← now it will save to blacklist
+    }
+
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    return sendSuccess(res, 200, 'Logged out successfully');
+  } catch (error) {
+    return sendError(res, 500, 'Internal server error', error);
+  }
+};
+
+
+
+// ── Forgot Password ───────────────────────────────────
+const forgotPasswordController = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return sendError(res, 400, 'Email is required');
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return sendError(res, 400, 'Please provide a valid email');
+    }
+
+    await forgotPassword(email);
+
+    return sendSuccess(res, 200, 'Password reset email sent successfully');
+  } catch (error) {
+    if (error.statusCode) return sendError(res, error.statusCode, error.message);
+    return sendError(res, 500, 'Internal server error', error);
+  }
+};
+
+// ── Reset Password ────────────────────────────────────
+const resetPasswordController = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return sendError(res, 400, 'Password is required');
+    }
+    if (password.length < 6) {
+      return sendError(res, 400, 'Password must be at least 6 characters');
+    }
+
+    await resetPassword(token, password);
+
+    return sendSuccess(res, 200, 'Password reset successfully');
+  } catch (error) {
+    if (error.statusCode) return sendError(res, error.statusCode, error.message);
+    return sendError(res, 500, 'Internal server error', error);
+  }
+};
+
+
+export { register, login, profile, logout, forgotPasswordController, resetPasswordController};
