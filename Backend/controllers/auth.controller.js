@@ -1,3 +1,4 @@
+//handle requests, validate input
 import { registerUser, loginUser, getProfile, logoutUser, forgotPassword, resetPassword   } from '../services/auth.service.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 
@@ -38,7 +39,7 @@ const register = async (req, res) => {
   }
 };
 
-// ── POST /api/auth/login ──────────────────────────────
+// POST /api/auth/login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,7 +63,7 @@ const login = async (req, res) => {
   }
 };
 
-// ── GET Profile ───────────────────────────────────────
+//  GET Profile 
 const profile = async (req, res) => {
   try {
     const user = await getProfile(req.user.userId);
@@ -104,7 +105,7 @@ const logout = async (req, res) => {
 
 
 
-// ── Forgot Password ───────────────────────────────────
+//  Forgot Password 
 const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
@@ -125,7 +126,7 @@ const forgotPasswordController = async (req, res) => {
   }
 };
 
-// ── Reset Password ────────────────────────────────────
+// ── Reset Password 
 const resetPasswordController = async (req, res) => {
   try {
     const { token } = req.params;

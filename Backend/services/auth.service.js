@@ -1,3 +1,8 @@
+//User registration logic
+// User login logic
+// Password reset logic
+// Logout logic
+// Profile data fetching
 import crypto from 'crypto';
 import Blacklist from '../models/blacklist.model.js';
 import sendEmail from '../utils/email.util.js';
@@ -5,7 +10,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 
-// ── Register ──────────────────────────────────────────
+//  Register 
 const registerUser = async ({ name, email, password }) => {
   // Check duplicate email
   const existingUser = await User.findOne({ email }).lean();
@@ -35,7 +40,7 @@ const registerUser = async ({ name, email, password }) => {
   };
 };
 
-// ── Login ─────────────────────────────────────────────
+//  Login 
 const loginUser = async ({ email, password }) => {
   // Fetch user with password explicitly selected
   const user = await User.findOne({ email }).select('+password').lean();
@@ -119,7 +124,7 @@ const forgotPassword = async (email) => {
 
   // Save to user
   user.resetPasswordToken = hashedToken;
-  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+  user.resetPasswordExpire = Date.now() +3600000; // 1 hr
   await user.save();
 
   // Send email
