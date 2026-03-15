@@ -1,6 +1,6 @@
 import { sendError } from '../utils/response.util.js';
 
-// Usage: authorize('admin') or authorize('admin', 'manager')
+// Usage: authorize('admin') 
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

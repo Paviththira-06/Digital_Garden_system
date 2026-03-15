@@ -76,7 +76,7 @@ const loginUser = async ({ email, password }) => {
   };
 };
 
-// ── Get Profile ───────────────────────────────────────
+// ── Get Profile 
 const getProfile = async (userId) => {
   const user = await User.findById(userId).lean();
   if (!user) {
@@ -95,7 +95,7 @@ const getProfile = async (userId) => {
 };
 
 
-// ── Logout ──────checks first, saves only if not exists 
+// Logout 
 const logoutUser = async (token) => {
   // Check if token already blacklisted
   const existing = await Blacklist.findOne({ token });
@@ -104,7 +104,7 @@ const logoutUser = async (token) => {
   }
 };
 
-// ── Forgot Password ─────────
+// ── Forgot Password 
 const forgotPassword = async (email) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -150,7 +150,7 @@ const forgotPassword = async (email) => {
   });
 };
 
-// ── Reset Password ────────────────────────────────────
+// Reset Password 
 const resetPassword = async (resetToken, newPassword) => {
   // Hash the token to compare with DB
   const hashedToken = crypto

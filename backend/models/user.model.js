@@ -26,10 +26,18 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'seller'],
       default: 'user',
     },
-    
+    sellerStatus: {
+      type: String,
+      enum: ['none', 'pending', 'approved', 'rejected'],
+      default: 'none',
+},
+sellerRequestedAt: {
+  type: Date,
+  default: null,
+},
     
     resetPasswordToken: {
       type: String,
